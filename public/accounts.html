@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>账号管理 · Perch的远程助手</title>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="accounts.css">
+  <script type="module" src="accounts.js"></script>
+</head>
+<body class="account-management">
+  <header class="account-header">
+    <div class="account-brand"><img src="perch.png" alt=""><span>账号管理</span></div>
+    <div class="account-header-actions">
+      <span id="account-state" class="account-state">未登录</span>
+      <button id="account-close" type="button">完成</button>
+    </div>
+  </header>
+
+  <main class="account-layout">
+    <aside class="account-sidebar">
+      <nav aria-label="账号管理">
+        <button class="account-nav" data-panel="profile" type="button" aria-current="page">账号</button>
+        <button id="security-nav" class="account-nav" data-panel="security" type="button" hidden>安全与设备</button>
+        <button id="admin-nav" class="account-nav" data-panel="admin" type="button" hidden>管理员</button>
+      </nav>
+      <p class="account-sidebar-note">登录后可连接同一账号下的设备。</p>
+    </aside>
+
+    <div class="account-content">
+      <section id="panel-profile" class="account-panel">
+        <div class="account-heading">
+          <div><p class="eyebrow">PERCH REMOTE</p><h1>账号</h1></div>
+          <p class="muted">管理登录、已保存账号和信令服务。</p>
+        </div>
+
+        <section id="active-account-card" class="account-card active-account" hidden>
+          <div id="active-avatar" class="active-avatar" aria-hidden="true"></div>
+          <div class="active-account-info">
+            <strong id="active-account-name"></strong>
+            <span id="active-account-email" class="muted"></span>
+            <span id="active-account-origin" class="muted"></span>
+          </div>
+          <button id="logout" type="button">退出账号</button>
+        </section>
+
+        <details id="login-details" class="account-card login-card" open>
+          <summary id="login-heading">邮箱登录</summary>
+          <p id="login-description" class="muted">使用已有账号登录，或验证邮箱后注册。</p>
+          <form id="email-form">
+            <fieldset class="auth-modes">
+              <legend class="sr-only">邮箱登录或注册方式</legend>
+              <label><input type="radio" name="auth-mode" value="password" checked> 密码登录</label>
+              <label><input type="radio" name="auth-mode" value="login"> 验证码登录</label>
+              <label><input type="radio" name="auth-mode" value="register"> 注册</label>
+            </fieldset>
+            <p id="register-help" class="muted" hidden>获授权的邮箱可以注册。请验证邮箱并设置至少 10 个字符的密码。</p>
+            <div class="form-grid">
+              <div class="form-field form-wide">
+                <label for="server">信令服务地址</label>
+                <input id="server" spellcheck="false" placeholder="https://服务器地址">
+                <p id="server-message" class="muted" role="status"></p>
+              </div>
+              <div class="form-field">
+                <label for="email-address">邮箱地址</label>
+                <input id="email-address" type="email" maxlength="254" autocomplete="email" required>
+              </div>
+              <div id="email-password" class="form-field">
+                <label id="password-label" for="password">邮箱登录密码</label>
+                <input id="password" type="password" minlength="10" maxlength="240" autocomplete="current-password" required>
+              </div>
+              <div id="email-confirm" class="form-field form-wide" hidden>
+                <label for="email-code">6 位验证码</label>
+                <input id="email-code" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" autocomplete="one-time-code">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button id="email-send" type="button" hidden>获取验证码</button>
+              <button class="primary" id="email-submit" type="submit">登录</button>
+            </div>
+          </form>
+          <p id="login-message" class="feedback" role="status"></p>
+        </details>
+
+        <section id="saved-card" class="account-card" hidden>
+          <div class="card-heading"><div><h2>已保存账号</h2><p class="muted">选择账号即可切换登录状态。</p></div></div>
+          <div id="saved-accounts" class="account-list" aria-label="已保存账号"></div>
+        </section>
+      </section>
+
+      <section id="panel-security" class="account-panel" hidden>
+        <div class="account-heading">
+          <div><p class="eyebrow">ACCOUNT</p><h1>安全与设备</h1></div>
+          <p class="muted">管理登录会话、密码和已登记设备。</p>
+        </div>
+        <section class="account-card">
+          <div class="card-heading">
+            <div><h2>登录会话</h2><p class="muted">检查当前账号登录过的设备。</p></div>
+            <div class="button-row">
+              <button id="sessions-refresh" type="button">刷新</button>
+              <button id="sessions-revoke-others" type="button">退出其他设备</button>
+              <button id="sessions-revoke-all" class="danger" type="button">退出所有设备</button>
+            </div>
+          </div>
+          <div id="session-list" class="account-list" aria-label="登录会话"></div>
+          <p id="security-message" class="feedback" role="status"></p>
+        </section>
+        <section class="account-card">
+          <h2>修改密码</h2>
+          <form id="password-change-form" class="password-form">
+            <div class="form-field"><label for="current-password">当前密码</label><input id="current-password" type="password" minlength="10" maxlength="240" autocomplete="current-password" required></div>
+            <div class="form-field"><label for="new-password">新密码</label><input id="new-password" type="password" minlength="10" maxlength="240" autocomplete="new-password" required></div>
+            <button class="primary" type="submit">修改密码</button>
+          </form>
+        </section>
+        <section class="account-card">
+          <div class="card-heading"><div><h2>账号设备</h2><p class="muted">移除设备会撤销它的当前账号凭证。</p></div></div>
+          <div id="managed-devices" class="account-list" aria-label="账号设备"></div>
+          <p id="managed-devices-message" class="feedback" role="status"></p>
+        </section>
+      </section>
+
+      <section id="panel-admin" class="account-panel" hidden>
+        <div class="account-heading">
+          <div><p class="eyebrow">ADMINISTRATION</p><h1>管理员</h1></div>
+          <p class="muted">管理注册资格、服务器中转和账号状态。</p>
+        </div>
+        <section class="account-card">
+          <h2>注册白名单</h2>
+          <p class="muted">移除邮箱只会收回注册资格，已注册的账号仍可登录。</p>
+          <form id="registration-form" class="inline-form">
+            <div class="form-field"><label for="registration-address">授权邮箱</label><input id="registration-address" type="email" maxlength="254" required></div>
+            <button class="primary" type="submit">添加邮箱</button>
+            <button id="registration-refresh" type="button">刷新</button>
+          </form>
+          <div id="registration-list" class="account-list" aria-label="已授权注册的邮箱"></div>
+          <p id="registration-message" class="feedback" role="status"></p>
+        </section>
+        <section class="account-card">
+          <h2>服务器中转授权</h2>
+          <p class="muted">只有获授权的账号可使用已配置的 TURN 中转。</p>
+          <form id="turn-access-form" class="inline-form">
+            <div class="form-field"><label for="turn-access-address">账号邮箱</label><input id="turn-access-address" type="email" maxlength="254" required></div>
+            <button class="primary" type="submit">授权中转</button>
+            <button id="turn-access-refresh" type="button">刷新</button>
+          </form>
+          <div id="turn-access-list" class="account-list" aria-label="已获中转授权的账号"></div>
+          <p id="turn-access-message" class="feedback" role="status"></p>
+        </section>
+        <section class="account-card">
+          <h2>禁用账号</h2>
+          <p class="muted">禁用后，该账号的登录会话会全部注销。</p>
+          <form id="disable-account-form" class="inline-form">
+            <div class="form-field"><label for="disable-account-email">账号邮箱</label><input id="disable-account-email" type="email" maxlength="254" required></div>
+            <button class="danger" type="submit">禁用账号</button>
+          </form>
+          <p id="disable-account-message" class="feedback" role="status"></p>
+        </section>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

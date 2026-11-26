@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'">
+  <title>软件更新</title>
+  <link rel="stylesheet" href="update.css">
+  <script defer src="update.js"></script>
+</head>
+<body>
+  <div class="window-shell">
+    <header class="titlebar">
+      <span class="window-title">PerchRemote · 软件更新</span>
+      <button id="window-close" class="window-close" type="button" aria-label="关闭更新窗口" title="关闭">×</button>
+    </header>
+    <main class="update-card" aria-live="polite">
+      <img class="app-icon" src="perch.png" alt="">
+      <p class="eyebrow">PERCH REMOTE</p>
+      <h1 id="title">正在检查更新</h1>
+      <p id="message" class="message">请稍候</p>
+      <section id="progress-area" class="progress-area" hidden>
+        <div id="progress-track" class="progress-track" role="progressbar" aria-label="更新进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+        <div class="progress-meta">
+          <span id="progress-label">准备中</span>
+          <span id="progress-percent">0%</span>
+        </div>
+      </section>
+      <p id="error" class="error" hidden></p>
+      <div class="actions">
+        <button id="primary" class="primary" type="button" hidden></button>
+        <button id="secondary" class="secondary" type="button">稍后</button>
+      </div>
+      <p class="version">当前版本 <span id="current-version">—</span></p>
+    </main>
+  </div>
+</body>
+</html>

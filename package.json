@@ -1,0 +1,34 @@
+{
+  "name": "PerchRemote",
+  "productName": "Perch的远程助手",
+  "version": "0.7.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "desktop": "npm run build:input && electron .",
+    "build:input": "node desktop/build-input.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:e2e": "node test/browser.mjs",
+    "package": "node tools/package.mjs",
+    "mac:signing:init": "node tools/macos-signing.mjs --init",
+    "test:workspace": "node test/workspace.mjs",
+    "test:performance": "node test/performance.mjs"
+  },
+  "main": "desktop/main.cjs",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "nodemailer": "10.6.1",
+    "ws": "8.23.0"
+  },
+  "devDependencies": {
+    "@electron/asar": "4.3.2",
+    "@electron/fuses": "^2.1.3",
+    "@electron/packager": "^20.3.0",
+    "electron": "45.4.1",
+    "node-api-headers": "^1.7.0",
+    "playwright-core": "^1.58.0"
+  }
+}

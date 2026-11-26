@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>Perch的远程助手</title>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
+  <script type="module" src="dashboard.js"></script>
+</head>
+<body class="workspace">
+  <aside class="sidebar">
+    <div class="workspace-brand"><img src="perch.png" alt=""><span>Perch的远程助手</span></div>
+    <nav class="workspace-nav" aria-label="工作台">
+      <h2>我的设备</h2>
+      <button id="nav-devices" class="nav-item" data-view="devices" type="button" aria-current="page"><i class="nav-icon grid-icon" aria-hidden="true"></i>全部设备</button>
+      <div id="device-list" class="device-list"></div>
+      <h2>远程协助</h2>
+      <button id="nav-assist" class="nav-item" data-view="assist" type="button"><i class="nav-icon link-icon" aria-hidden="true"></i>口令协助</button>
+      <button id="nav-sessions" class="nav-item" data-view="sessions" type="button"><i class="nav-icon windows-icon" aria-hidden="true"></i>会话窗口<span id="window-count" class="window-count" hidden></span></button>
+    </nav>
+    <button id="nav-settings" class="nav-item nav-settings" data-view="settings" type="button"><i class="nav-icon settings-icon" aria-hidden="true"></i>设置</button>
+  </aside>
+
+  <div class="workspace-main">
+    <header class="workspace-header">
+      <span>设备工作台</span>
+      <button id="nav-accounts" class="account-trigger" type="button" aria-label="打开账号管理">
+        <span class="avatar" aria-hidden="true"></span><span>账号</span><span id="account-state">未登录</span>
+      </button>
+    </header>
+
+    <main class="workspace-content">
+      <section id="permission-card" class="notice" hidden aria-labelledby="permission-heading">
+        <div><h2 id="permission-heading">macOS 权限待设置</h2><p id="permission-message" role="status"></p></div>
+        <button id="permission-open" type="button">前往设置</button>
+      </section>
+
+      <section id="view-devices" class="workspace-view">
+        <div class="page-heading"><h1 id="device-heading">全部设备</h1><span class="connection-pill" id="device-state" hidden></span></div>
+        <p class="page-description" id="device-subtitle">管理同一账号下的电脑。</p>
+        <div class="device-stage" id="device-stage">
+          <div class="stage-copy">
+            <h2 id="stage-title">让常用设备出现在这里</h2>
+            <p id="stage-text">在两台电脑登录同一账号，即可查看在线状态并发起远程控制。</p>
+            <div class="actions">
+              <button id="device-login" class="primary" type="button">登录或注册</button>
+              <button id="connect-device" class="primary" type="button" hidden>连接</button>
+              <button id="focus-device" class="primary" type="button" hidden>显示远控窗口</button>
+              <button id="disconnect-device" type="button" hidden>断开</button>
+            </div>
+          </div>
+          <div class="device-drawing" aria-hidden="true"><div class="drawing-screen"><img src="perch.png" alt=""><span></span><span></span></div><div class="drawing-stand"></div></div>
+        </div>
+        <p id="device-message" class="feedback" role="status"></p>
+        <section id="device-overview" class="surface device-overview" aria-labelledby="overview-heading">
+          <div class="surface-heading"><h2 id="overview-heading">账号设备</h2><span id="device-connection" class="muted"></span></div>
+          <div id="overview-list"></div>
+        </section>
+        <section id="device-details" class="surface device-details" hidden>
+          <div><span>系统</span><strong id="detail-system"></strong></div>
+          <div><span>设备状态</span><strong id="detail-availability"></strong></div>
+          <div><span>连接路径</span><strong id="detail-route"></strong></div>
+        </section>
+      </section>
+
+      <section id="view-assist" class="workspace-view" hidden>
+        <div class="page-heading"><h1>口令协助</h1></div>
+        <p class="page-description">登录后才能加入会话或共享本机。</p>
+        <section class="surface flow-card">
+          <h2>加入对方的会话</h2>
+          <form id="quick-join">
+            <label for="quick-invite">邀请链接</label>
+            <div class="invite-line">
+              <input id="quick-invite" spellcheck="false" maxlength="2048" placeholder="粘贴对方发来的完整邀请链接" required>
+              <button class="primary">加入协助</button>
+            </div>
+          </form>
+        </section>
+        <section class="surface flow-card share-card">
+          <div><h2>共享本机</h2><p class="muted">生成一次性邀请。由你确认对方可以观看或操作。</p></div>
+          <button id="quick-share" type="button">共享本机并生成邀请</button>
+        </section>
+        <p id="invite-message" class="feedback" role="status"></p>
+      </section>
+
+      <section id="view-sessions" class="workspace-view" hidden>
+        <div class="page-heading"><h1>会话窗口</h1></div>
+        <p class="page-description">每个远程连接在独立窗口中运行。</p>
+        <section class="surface" id="open-windows" aria-label="已打开的会话"></section>
+        <p id="window-message" class="feedback" role="status"></p>
+      </section>
+
+      <section id="view-settings" class="workspace-view" hidden>
+        <div class="page-heading"><h1>设置</h1></div>
+        <p class="page-description">管理界面外观、连接偏好和应用启动方式。</p>
+        <div class="settings-grid">
+          <section class="surface flow-card appearance" aria-labelledby="appearance-heading">
+            <h2 id="appearance-heading">界面外观</h2>
+            <fieldset id="theme-choices" class="theme-choices">
+              <legend class="sr-only">主题颜色</legend>
+              <label class="theme-choice">
+                <span class="theme-swatch" data-palette="forest" aria-hidden="true"></span>
+                <span><input type="radio" name="theme" value="forest" checked> 森林绿</span>
+              </label>
+              <label class="theme-choice">
+                <span class="theme-swatch" data-palette="blue" aria-hidden="true"></span>
+                <span><input type="radio" name="theme" value="blue"> 海雾蓝</span>
+              </label>
+              <label class="theme-choice">
+                <span class="theme-swatch" data-palette="violet" aria-hidden="true"></span>
+                <span><input type="radio" name="theme" value="violet"> 暮霞紫</span>
+              </label>
+              <label class="theme-choice">
+                <span class="theme-swatch" data-palette="white" aria-hidden="true"></span>
+                <span><input type="radio" name="theme" value="white"> 白色</span>
+              </label>
+              <label class="theme-choice">
+                <span class="theme-swatch" data-palette="night" aria-hidden="true"></span>
+                <span><input type="radio" name="theme" value="night"> 深色</span>
+              </label>
+            </fieldset>
+          </section>
+          <section class="surface flow-card startup-card" aria-labelledby="startup-heading">
+            <div class="setting-card-heading">
+              <h2 id="startup-heading">开机启动</h2>
+              <span id="startup-state" class="setting-state" role="status" aria-live="polite">读取中</span>
+            </div>
+            <label class="setting-toggle-row" for="startup-toggle">
+              <span class="setting-toggle-copy">
+                <strong>登录系统后自动启动</strong>
+                <small id="startup-help" class="muted">正在读取当前设置。</small>
+              </span>
+              <span class="switch-control">
+                <input id="startup-toggle" type="checkbox" role="switch" disabled aria-describedby="startup-help">
+                <span class="switch-track" aria-hidden="true"></span>
+              </span>
+            </label>
+            <p id="startup-message" class="feedback" role="status"></p>
+          </section>
+          <section class="surface flow-card">
+            <h2>视频编码</h2>
+            <label for="video-codec-preference">首选格式</label>
+            <select id="video-codec-preference" aria-describedby="video-codec-help video-codec-support">
+              <option value="auto">自动</option>
+              <option value="h264">H.264</option>
+              <option value="h265">H.265（HEVC）</option>
+            </select>
+            <p class="muted" id="video-codec-help">下次连接生效。优先采用主控端的选择。</p>
+            <p class="muted" id="video-codec-support" role="status" hidden></p>
+          </section>
+          <section class="surface flow-card" id="permission-settings" hidden>
+            <h2>macOS 权限</h2>
+            <p id="permission-status" class="muted"></p>
+            <div class="actions">
+              <button id="permission-screen" type="button">打开屏幕录制设置</button>
+              <button id="permission-input" type="button">打开辅助功能设置</button>
+              <button id="permission-refresh" type="button">重新检查</button>
+            </div>
+          </section>
+          <details class="surface flow-card" id="relay-settings" hidden>
+            <summary>中转设置</summary>
+            <label class="check"><input id="relay-only" type="checkbox">强制使用服务器中转</label>
+            <p class="muted">默认优先直连。仅在需要时启用服务器中转。</p>
+          </details>
+          <section class="surface flow-card app-info-card" aria-labelledby="app-info-heading">
+            <h2 id="app-info-heading">应用信息</h2>
+            <div class="version-row"><span>当前版本</span><strong id="app-version" aria-live="polite">读取中</strong></div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

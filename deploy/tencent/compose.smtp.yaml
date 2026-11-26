@@ -1,0 +1,9 @@
+services:
+  signal:
+    environment:
+      PEERDESK_SMTP_CONFIG: /run/secrets/perch-smtp.json
+    volumes:
+      - type: bind
+        source: ${PEERDESK_SMTP_FILE:?Set PEERDESK_SMTP_FILE to the SMTP credential file}
+        target: /run/secrets/perch-smtp.json
+        read_only: true

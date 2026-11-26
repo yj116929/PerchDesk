@@ -1,0 +1,60 @@
+services:
+  signal:
+    build:
+      context: ../..
+      dockerfile: deploy/tencent/Dockerfile
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PEERDESK_TRUST_PROXY: "1"
+      PEERDESK_ADMIN_EMAILS: "${PEERDESK_ADMIN_EMAILS:-}"
+      STUN_URLS: "${PEERDESK_STUN_URLS:-stun:${PEERDESK_HOST:?Set PEERDESK_HOST in .env}:${PEERDESK_STUN_PORT:-3478}}"
+      TURN_URLS: "${TURN_URLS:-}"
+      TURN_SHARED_SECRET: "${TURN_SHARED_SECRET:-}"
+      TURN_EXTERNAL_USERNAME: "${TURN_EXTERNAL_USERNAME:-}"
+      TURN_EXTERNAL_CREDENTIAL: "${TURN_EXTERNAL_CREDENTIAL:-}"
+      PEERDESK_UPDATE_DIR: /updates
+    ports:
+      - "127.0.0.1:${PEERDESK_HTTP_PORT:-8787}:8787"
+    volumes:
+      - peerdesk-accounts:/data
+      - ./updates:/updates:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/healthz').then(r=>{if(!r.ok)process.exitCode=1}).catch(()=>process.exitCode=1)"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+  turn:
+    image: coturn/coturn:4-alpine
+    restart: unless-stopped
+    network_mode: host
+    entrypoint: ["/bin/sh", "/usr/local/bin/start-coturn.sh"]
+    environment:
+      PEERDESK_HOST: "${PEERDESK_HOST:?Set PEERDESK_HOST in .env}"
+      TURN_PORT: "${PEERDESK_STUN_PORT:-3478}"
+      TURN_SHARED_SECRET: "${TURN_SHARED_SECRET:-}"
+      TURN_EXTERNAL_IP: "${TURN_EXTERNAL_IP:-}"
+      TURN_MIN_PORT: "${TURN_MIN_PORT:-49160}"
+      TURN_MAX_PORT: "${TURN_MAX_PORT:-49200}"
+    volumes:
+      - ./start-coturn.sh:/usr/local/bin/start-coturn.sh:ro
+  edge:
+    image: caddy:2.11.9-alpine
+    profiles: ["edge"]
+    restart: unless-stopped
+    depends_on:
+      signal:
+        condition: service_healthy
+    environment:
+      PEERDESK_HOST: "${PEERDESK_HOST:?Set PEERDESK_HOST in .env}"
+    ports:
+      - "443:443/tcp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  peerdesk-accounts:
+  caddy-data:
+  caddy-config:

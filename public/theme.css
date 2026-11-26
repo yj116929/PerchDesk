@@ -1,0 +1,90 @@
+:root, .theme-swatch {
+  --theme-scheme: light;
+  --theme-canvas: #f3f5ee;
+  --theme-paper: #fff;
+  --theme-ink: #202c26;
+  --theme-muted: #5c6c62;
+  --theme-edge: #dce4d9;
+  --theme-rail: #1c3228;
+  --theme-primary: #315e47;
+  --theme-on-primary: #fff;
+  --theme-tint: #d5e8d2;
+  --theme-session-canvas: #0c111b;
+  --theme-session-panel: #141c2a;
+  --theme-session-accent: #9eead3;
+  --theme-warning: #684812;
+  --theme-warning-edge: #eadab7;
+  --theme-warning-paper: #fbf5e5;
+  --theme-error: #a13e25;
+  --theme-online: #2f6245;
+  --theme-online-paper: #e4eee4;
+}
+
+:root[data-theme="blue"], .theme-swatch[data-palette="blue"] {
+  --theme-canvas: #eef4f9;
+  --theme-ink: #1c2c3d;
+  --theme-muted: #52667b;
+  --theme-edge: #d7e2ee;
+  --theme-rail: #1d3650;
+  --theme-primary: #245b8a;
+  --theme-tint: #d3e5f5;
+  --theme-session-canvas: #0b1625;
+  --theme-session-panel: #15253b;
+  --theme-session-accent: #9dd0ff;
+}
+
+:root[data-theme="violet"], .theme-swatch[data-palette="violet"] {
+  --theme-canvas: #f5f0f8;
+  --theme-ink: #302437;
+  --theme-muted: #6c5b75;
+  --theme-edge: #e7dcec;
+  --theme-rail: #382843;
+  --theme-primary: #6c4882;
+  --theme-tint: #eadced;
+  --theme-session-canvas: #181221;
+  --theme-session-panel: #241b31;
+  --theme-session-accent: #e4b9f3;
+}
+
+:root[data-theme="white"], .theme-swatch[data-palette="white"] {
+  --theme-canvas: #fff;
+  --theme-ink: #222933;
+  --theme-muted: #56616e;
+  --theme-edge: #dce0e6;
+  --theme-rail: #f5f6f8;
+  --theme-rail-label: #27303b;
+  --theme-primary: #394453;
+  --theme-tint: #eef0f3;
+  --theme-session-scheme: light;
+  --theme-session-canvas: #fff;
+  --theme-session-panel: #fff;
+  --theme-session-ink: var(--theme-ink);
+  --theme-session-muted: var(--theme-muted);
+  --theme-session-edge: var(--theme-edge);
+  --theme-session-field: #fafafb;
+  --theme-session-button: #f3f4f6;
+  --theme-session-accent: var(--theme-primary);
+  --theme-session-on-accent: #fff;
+}
+
+:root[data-theme="night"], .theme-swatch[data-palette="night"] {
+  --theme-scheme: dark;
+  --theme-canvas: #141a25;
+  --theme-paper: #1d2532;
+  --theme-ink: #eaf0f8;
+  --theme-muted: #aebccd;
+  --theme-edge: #354256;
+  --theme-rail: #0f141e;
+  --theme-primary: #a9c9f2;
+  --theme-on-primary: #142235;
+  --theme-tint: #2b3e57;
+  --theme-session-canvas: #0c1018;
+  --theme-session-panel: #1b2432;
+  --theme-session-accent: #aecbf6;
+  --theme-warning: #f3d9a6;
+  --theme-warning-edge: #715b3d;
+  --theme-warning-paper: #342b20;
+  --theme-error: #ffb7a4;
+  --theme-online: #a6dbc2;
+  --theme-online-paper: #263e38;
+}

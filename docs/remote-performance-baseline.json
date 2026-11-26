@@ -1,0 +1,168 @@
+{
+  "formatVersion": 1,
+  "date": "2026-11-24",
+  "comparisonScope": "app.js integration, shared current session.js and synthetic canvas source",
+  "environment": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "browser": "158.0.8127.37",
+    "path": "loopback P2P"
+  },
+  "scene": {
+    "name": "moving-window-with-scrolling-rows",
+    "width": 1280,
+    "height": 720,
+    "fps": 60,
+    "warmupMs": 3000,
+    "durationMs": 6000,
+    "repeats": 3
+  },
+  "before": {
+    "appSha256": "36a55f5c2175d53a4968fffbe3935f3c52202471771a6b8d5a331185eebe8ea8",
+    "results": [
+      {
+        "repeat": 1,
+        "frameIntervalMs": {
+          "count": 276,
+          "p50": 16.799999999999727,
+          "p95": 50,
+          "max": 51.79999999999927
+        },
+        "syntheticSourceToPresentMs": {
+          "count": 53,
+          "p50": 27,
+          "p95": 37,
+          "max": 41
+        },
+        "callbackFps": 46.166666666666664,
+        "callbackGaps": 36,
+        "decodedSizes": [
+          "320x180",
+          "480x270",
+          "640x360",
+          "960x540"
+        ]
+      },
+      {
+        "repeat": 2,
+        "frameIntervalMs": {
+          "count": 269,
+          "p50": 16.699999999999818,
+          "p95": 50,
+          "max": 50.399999999999636
+        },
+        "syntheticSourceToPresentMs": {
+          "count": 56,
+          "p50": 28,
+          "p95": 38,
+          "max": 45
+        },
+        "callbackFps": 45,
+        "callbackGaps": 41,
+        "decodedSizes": [
+          "320x180",
+          "480x270",
+          "640x360",
+          "960x540"
+        ]
+      },
+      {
+        "repeat": 3,
+        "frameIntervalMs": {
+          "count": 267,
+          "p50": 16.800000000000182,
+          "p95": 50.099999999999454,
+          "max": 65
+        },
+        "syntheticSourceToPresentMs": {
+          "count": 54,
+          "p50": 28,
+          "p95": 40,
+          "max": 55
+        },
+        "callbackFps": 44.666666666666664,
+        "callbackGaps": 41,
+        "decodedSizes": [
+          "320x180",
+          "480x270",
+          "640x360",
+          "960x540"
+        ]
+      }
+    ]
+  },
+  "after": {
+    "appSha256": "e7adb86c7ddf9e70a7ca1e6ad0a102bf66ca752644fca67b3014bd58c52f8723",
+    "results": [
+      {
+        "repeat": 1,
+        "frameIntervalMs": {
+          "count": 268,
+          "p50": 16.700000000000728,
+          "p95": 49.900000000000546,
+          "max": 51.5
+        },
+        "syntheticSourceToPresentMs": {
+          "count": 55,
+          "p50": 30,
+          "p95": 41,
+          "max": 44
+        },
+        "callbackFps": 44.833333333333336,
+        "callbackGaps": 39,
+        "decodedSizes": [
+          "320x180",
+          "480x270",
+          "640x360",
+          "960x540"
+        ]
+      },
+      {
+        "repeat": 2,
+        "frameIntervalMs": {
+          "count": 272,
+          "p50": 16.700000000000728,
+          "p95": 50,
+          "max": 50.80000000000018
+        },
+        "syntheticSourceToPresentMs": {
+          "count": 55,
+          "p50": 29,
+          "p95": 39,
+          "max": 46
+        },
+        "callbackFps": 45.5,
+        "callbackGaps": 36,
+        "decodedSizes": [
+          "320x180",
+          "480x270",
+          "640x360",
+          "960x540"
+        ]
+      },
+      {
+        "repeat": 3,
+        "frameIntervalMs": {
+          "count": 277,
+          "p50": 16.700000000000728,
+          "p95": 49.80000000000018,
+          "max": 51.400000000000546
+        },
+        "syntheticSourceToPresentMs": {
+          "count": 53,
+          "p50": 29,
+          "p95": 39,
+          "max": 44
+        },
+        "callbackFps": 46.333333333333336,
+        "callbackGaps": 35,
+        "decodedSizes": [
+          "320x180",
+          "480x270",
+          "640x360",
+          "960x540"
+        ]
+      }
+    ]
+  }
+}

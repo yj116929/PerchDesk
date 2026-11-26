@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' ws: wss:; media-src 'self' blob:; object-src 'none'; base-uri 'none'">
+  <title>Perch的远程助手</title>
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand" id="session-name">Perch的远程助手</div>
+    <div class="session-tools">
+      <div id="connection" class="pill" data-live="false">未连接</div>
+      <details id="control-center" hidden>
+        <summary>控制中心</summary>
+        <div class="control-card">
+          <section class="control-group" aria-labelledby="quality-heading">
+            <h2 id="quality-heading">画质</h2>
+            <div class="control-grid">
+              <label>分辨率档位<select id="quality-cap" aria-describedby="quality-rate quality-compatibility">
+                <option value="original">原画 · 4K</option><option value="ultra">超清 · 2K</option><option value="high">高清 · 1080p</option><option value="standard" selected>标准 · 720p</option>
+              </select></label>
+              <label>帧率上限<select id="frame-rate">
+                <option value="144">144 Hz</option><option value="90">90 Hz</option><option value="60" selected>60 Hz</option><option value="30">30 Hz</option>
+              </select></label>
+            </div>
+            <p id="quality-rate" class="fine">码率上限 4 Mbps</p>
+            <p id="quality-compatibility" class="fine" hidden>被控端使用旧版画质档位。更新后可使用四档画质。</p>
+          </section>
+          <section class="control-group" aria-labelledby="sound-heading">
+            <h2 id="sound-heading">声音</h2>
+            <label class="volume-control" for="remote-volume">
+              <span>播放音量</span><input id="remote-volume" type="range" min="0" max="100" value="100"><output id="remote-volume-value" for="remote-volume">100%</output>
+            </label>
+            <p id="remote-audio-status" class="fine" role="status"></p>
+          </section>
+          <section class="control-group" aria-labelledby="security-heading">
+            <h2 id="security-heading">安全</h2>
+            <label class="check"><input id="lock-after" type="checkbox">远程结束后，被控端自动锁屏</label>
+            <label class="check"><input id="quiet-host" type="checkbox">被控端静音运行</label>
+            <p id="control-feedback" class="fine" role="status"></p>
+          </section>
+          <section class="control-group" aria-labelledby="keyboard-heading">
+            <h2 id="keyboard-heading">快捷键</h2>
+            <label class="check"><input id="remote-shortcuts" type="checkbox">优先发送快捷键到被控端</label>
+            <div id="shortcut-actions" class="inline session-actions" hidden>
+              <select id="shortcut-choice" aria-label="选择要发送的组合键"></select>
+              <button id="send-shortcut" type="button">发送</button>
+            </div>
+            <p class="fine">点一下远控画面即可使用。按 Shift + Esc 退出键盘焦点。</p>
+          </section>
+          <section class="control-group" aria-labelledby="more-heading">
+            <h2 id="more-heading">更多</h2>
+            <label class="check"><input id="network-visible" type="checkbox" checked>显示网络状态</label>
+            <div id="relay-options" hidden>
+              <label class="check"><input id="session-relay" type="checkbox">开启服务器中转加速</label>
+              <p id="relay-feedback" class="fine" role="status"></p>
+            </div>
+            <p id="performance-status" class="fine" role="status"></p>
+            <div class="inline session-actions">
+              <button id="export-performance" type="button">导出性能诊断</button>
+              <button id="exchange-toggle" type="button">文件和文本</button>
+              <button id="viewer-hangup" class="danger" type="button">结束会话</button>
+            </div>
+          </section>
+        </div>
+      </details>
+    </div>
+  </header>
+  <main>
+    <div class="grid">
+      <section class="panel session">
+        <h1>远程会话</h1>
+        <div id="roles" class="roles" aria-label="会话方式">
+          <button type="button" id="view-role" aria-pressed="true">加入协助</button>
+          <button type="button" id="share-role" aria-pressed="false">共享屏幕</button>
+        </div>
+        <form id="join-form">
+          <label for="invite">邀请链接或口令</label>
+          <input id="invite" placeholder="粘贴完整邀请" autocomplete="off" spellcheck="false" required>
+          <button class="primary" id="join">请求加入</button>
+        </form>
+        <form id="share-form" hidden>
+          <div id="desktop-settings" hidden>
+            <label for="display">显示器</label>
+            <select id="display"></select>
+            <label class="check"><input id="share-system-audio" type="checkbox">同时共享系统声音</label>
+          </div>
+          <div id="server-settings">
+            <div id="desktop-origin" hidden>
+              <label for="origin">信令服务地址</label>
+              <input id="origin" placeholder="https://assist.example.com" autocomplete="off" spellcheck="false">
+            </div>
+          </div>
+          <button class="primary" id="share">开始共享并生成邀请</button>
+        </form>
+        <div id="invite-box" hidden>
+          <label for="share-link">邀请链接 · 一次有效</label>
+          <div class="inline">
+            <input id="share-link" readonly>
+            <button type="button" id="copy">复制</button>
+          </div>
+        </div>
+        <div id="approval" class="action-box" hidden>
+          <p>有人持邀请口令请求加入。</p>
+          <div class="inline">
+            <button type="button" id="reject">拒绝</button>
+            <button type="button" id="accept" class="primary">允许观看</button>
+          </div>
+        </div>
+        <p id="status" role="status">输入邀请后，等待共享方确认。</p>
+        <button type="button" id="hangup" class="danger" hidden>结束会话</button>
+        <button type="button" id="control-toggle" hidden>允许键鼠控制</button>
+        <p id="stop-key" class="fine" hidden></p>
+      </section>
+
+      <section class="panel stage">
+        <div id="screen">
+          <div id="empty">
+            <span class="monitor" aria-hidden="true"></span>
+            <p>等待共享画面</p>
+          </div>
+          <video id="video" tabindex="0" autoplay playsinline muted hidden></video>
+          <video id="capture-source" hidden></video>
+        </div>
+        <dl id="network">
+          <div><dt>连接路径</dt><dd id="route">—</dd></div>
+          <div><dt>往返延迟</dt><dd id="rtt">—</dd></div>
+          <div><dt>当前画质</dt><dd id="quality">—</dd></div>
+          <div><dt>视频码率</dt><dd id="video-bitrate">—</dd></div>
+          <div><dt>视频编码</dt><dd id="video-codec">—</dd></div>
+        </dl>
+      </section>
+
+      <p id="clipboard-progress" role="status" hidden></p>
+
+      <section class="panel exchanges" id="exchanges" hidden>
+        <div id="legacy-files">
+          <h2>文件互传</h2>
+          <div id="file-request" class="action-box" hidden>
+            <p id="file-offer"></p>
+            <div class="inline"><button id="file-deny">拒绝</button><button class="primary" id="file-accept">接收</button></div>
+          </div>
+          <label class="file-button">选择发送文件<input type="file" id="file" aria-label="选择发送文件" disabled></label>
+          <p role="status" id="file-status" class="fine">单文件上限 100 MiB</p>
+          <div id="downloads"></div>
+        </div>
+        <div>
+          <h2>文本剪贴板</h2>
+          <label for="clipboard" class="sr-only">发送文本</label>
+          <textarea id="clipboard" rows="2" maxlength="12000" placeholder="输入或粘贴文本"></textarea>
+          <div class="inline"><button id="send-text" disabled>发送文本</button><button id="copy-text" hidden>复制收到的文本</button></div>
+          <p id="text-status" class="fine" role="status"></p>
+          <label for="received-text" class="sr-only">收到的文本</label>
+          <textarea id="received-text" rows="2" maxlength="12000" readonly hidden></textarea>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+	auto_https off
+	default_sni {$PEERDESK_HOST}
+	servers {
+		protocols h1 h2
+	}
+}
+
+https://{$PEERDESK_HOST}:8443 {
+	tls /etc/peerdesk/signal.crt /etc/peerdesk/signal.key
+	@signaling path /signal /healthz /devices /api/* /updates/*
+	handle @signaling {
+		reverse_proxy signal:8787
+	}
+	handle {
+		respond 404
+	}
+}

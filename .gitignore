@@ -1,0 +1,8 @@
+node_modules/
+desktop/build/
+.env
+.build/
+releases/
+.peerdesk/
+deploy/tencent/private-tls/
+.DS_Store

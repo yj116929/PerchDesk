@@ -1,0 +1,15 @@
+services:
+  private-edge:
+    image: caddy:2.11.9-alpine
+    depends_on:
+      signal:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      PEERDESK_HOST: "${PEERDESK_HOST:?Set PEERDESK_HOST in .env}"
+    ports:
+      - "8443:8443/tcp"
+    volumes:
+      - ./Caddyfile.private:/etc/caddy/Caddyfile:ro
+      - ./private-tls/signal.crt:/etc/peerdesk/signal.crt:ro
+      - ./private-tls/signal.key:/etc/peerdesk/signal.key:ro
